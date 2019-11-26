@@ -12,5 +12,9 @@
   "devDependencies": {
     "electron": "^4.0.7",
     "electron-builder": "^20.38.5"
+  },
+  "dependencies": {
+    "electron-prompt": "^1.4.0",
+    "electron-store": "^5.1.0"
   }
 }
