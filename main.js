@@ -22,12 +22,12 @@ function createWindow() {
 
   mainWindow.setMenu(null)
 
-  globalShortcut.register('f5', function () {
-    mainWindow.reload()
-  })
-  globalShortcut.register('CommandOrControl+R', function () {
-    mainWindow.reload()
-  })
+  // globalShortcut.register('f5', function () {
+  //   mainWindow.reload()
+  // })
+  // globalShortcut.register('CommandOrControl+R', function () {
+  //   mainWindow.reload()
+  // })
 
   let appUrl = store.get('appUrl');
   console.log('got appUrl', appUrl);
@@ -109,7 +109,7 @@ function createWindow() {
 
       store.set('appUser1', results[1]);
 
-      console.log(results[1], results[0]);
+      // console.log(results[1], results[0]);
 
       callback(results[1], results[0]);
 
