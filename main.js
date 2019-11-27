@@ -29,7 +29,32 @@ function createWindow() {
     tray = new Tray('image/icon.png')
     const contextMenu = Menu.buildFromTemplate([
         {
+            label: "Application",
+            submenu: [
+
+                {
+                    label: "Set Server",
+                    click: function () {
+
+                    }
+                },
+                {
+                    label: "Set User",
+                    click: function () {
+
+                    }
+                },
+                { type: "separator" },
+                {
+                    label: "About Application",
+                    selector: "orderFrontStandardAboutPanel:"
+                }
+            ]
+        },
+        { type: "separator" },
+        {
             label: 'Quit',
+            accelerator: "Command+Q",
             click: () => {
                 app.quit();
             }
