@@ -21,7 +21,6 @@ function createWindow() {
         show: false,
     });
 
-    mainWindow.setIcon('icon.png');
     mainWindow.setMenu(null);
     mainWindow.setTitle('VS Code Web');
 

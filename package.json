@@ -1,6 +1,8 @@
 {
   "name": "code-server-app",
-  "version": "1.0.0",
+  "version": "1.2.0",
+  "author": "tgxn",
+  "description": "VS Code-Server Electron App",
   "main": "main.js",
   "license": "MIT",
   "scripts": {
@@ -16,5 +18,8 @@
   "dependencies": {
     "electron-prompt": "^1.4.0",
     "electron-store": "^5.1.0"
+  },
+  "build": {
+    "appId": "tech.tgxn.code"
   }
 }
