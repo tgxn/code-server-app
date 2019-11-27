@@ -1,17 +1,14 @@
-// Modules to control application life and create native browser window
-const { app, Menu, BrowserWindow, Tray, BrowserView, globalShortcut } = require("electron");
+const { app, Menu, BrowserWindow, Tray } = require("electron");
 
 const Store = require('electron-store');
 const prompt = require('electron-prompt');
 
 const store = new Store();
 
-let tray = null
-let mainWindow;
+let mainWindow, tray;
 
 function createWindow() {
 
-    // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 1280,
         height: 720,
@@ -63,10 +60,11 @@ function createWindow() {
     tray.setToolTip('Code-Server Client');
     tray.setContextMenu(contextMenu);
 
+    // attempt to load stored url
     let appUrl = store.get('appUrl');
-    console.log('got appUrl', appUrl);
 
     if (appUrl) {
+        console.log('got appUrl', appUrl);
         mainWindow.loadURL(appUrl);
         mainWindow.show();
     } else {
@@ -75,7 +73,7 @@ function createWindow() {
             title: 'Coder Server URL',
             alwaysOnTop: true,
             label: 'URL:',
-            value: 'https://code.tgxn.tech',
+            value: '',
             inputAttrs: {
                 type: 'url'
             },
@@ -94,6 +92,7 @@ function createWindow() {
     }
 
     mainWindow.on("closed", function () {
+        Electron.session.defaultSession.clearCache(() => { });
         mainWindow = null;
     });
 
@@ -151,7 +150,6 @@ function createWindow() {
     });
 
 }
-
 app.on("ready", createWindow);
 
 // Quit when all windows are closed.

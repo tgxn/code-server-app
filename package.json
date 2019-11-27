@@ -1,6 +1,6 @@
 {
   "name": "code-server-client",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "author": "tgxn",
   "description": "Code-Server Client",
   "main": "main.js",
