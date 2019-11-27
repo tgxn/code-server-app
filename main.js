@@ -1,4 +1,4 @@
-const { app, Menu, BrowserWindow, Tray } = require("electron");
+const { app, Menu, BrowserWindow, Tray, Electron } = require("electron");
 
 const Store = require('electron-store');
 const prompt = require('electron-prompt');
@@ -49,6 +49,12 @@ function createWindow() {
             ]
         },
         { type: "separator" },
+        {
+            label: 'Reload',
+            click: () => {
+                mainWindow.reload();
+            }
+        },
         {
             label: 'Quit',
             accelerator: "Command+Q",
