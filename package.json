@@ -20,7 +20,7 @@
     "electron-store": "^5.1.0"
   },
   "build": {
-    "productName": "Code-Server Client",
+    "productName": "Code-Server-Client",
     "appId": "tech.tgxn.code",
     "artifactName": "Code-Server-Client-${version}-Setup.${ext}",
     "win": {
