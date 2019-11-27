@@ -26,7 +26,7 @@ function createWindow() {
     tray = new Tray('image/icon.png')
     const contextMenu = Menu.buildFromTemplate([
         {
-            label: "Application",
+            label: "Config",
             submenu: [
 
                 {
@@ -40,25 +40,23 @@ function createWindow() {
                     click: function () {
 
                     }
-                },
-                { type: "separator" },
-                {
-                    label: "About Application",
-                    selector: "orderFrontStandardAboutPanel:"
                 }
             ]
         },
         { type: "separator" },
         {
             label: 'Reload',
-            click: () => {
+            click: function () {
                 mainWindow.reload();
             }
         },
         {
+            label: "About Application",
+            selector: "orderFrontStandardAboutPanel:"
+        },
+        {
             label: 'Quit',
-            accelerator: "Command+Q",
-            click: () => {
+            click: function () {
                 app.quit();
             }
         }
@@ -96,6 +94,7 @@ function createWindow() {
         }).catch(console.error);
 
     }
+
 
     mainWindow.on("closed", function () {
         mainWindow = null;
