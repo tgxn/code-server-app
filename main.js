@@ -1,11 +1,12 @@
 // Modules to control application life and create native browser window
-const { app, Menu, BrowserWindow, BrowserView, globalShortcut } = require("electron");
+const { app, Menu, BrowserWindow, Tray, BrowserView, globalShortcut } = require("electron");
 
 const Store = require('electron-store');
 const prompt = require('electron-prompt');
 
 const store = new Store();
 
+let tray = null
 let mainWindow;
 
 function createWindow() {
@@ -14,15 +15,28 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1280,
         height: 720,
-        fullscreen: false,
-        webPreferences: {
-            nodeIntegration: false
-        },
         show: false,
+        icon: 'image/icon.png',
+        title: 'Code-Server Client',
+        backgroundColor: "#252526",
+        autoHideMenuBar: true,
+        darkTheme: true,
+        webPreferences: {
+            nodeIntegration: false,
+        },
     });
 
-    mainWindow.setMenu(null);
-    mainWindow.setTitle('VS Code Web');
+    tray = new Tray('image/icon.png')
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: 'Quit',
+            click: () => {
+                app.quit();
+            }
+        }
+    ])
+    tray.setToolTip('Code-Server Client');
+    tray.setContextMenu(contextMenu);
 
     let appUrl = store.get('appUrl');
     console.log('got appUrl', appUrl);
