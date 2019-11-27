@@ -2,7 +2,7 @@
 const { app, Menu, BrowserWindow, BrowserView, globalShortcut } = require("electron");
 
 const Store = require('electron-store');
-const store = new Store();
+const store = new Store('123');
 
 const prompt = require('electron-prompt');
 
@@ -18,9 +18,12 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false
     },
+    show: false,
   });
 
-  mainWindow.setMenu(null)
+  mainWindow.setIcon('icon.png');
+  mainWindow.setMenu(null);
+  mainWindow.setTitle('VS Code Web');
 
   // globalShortcut.register('f5', function () {
   //   mainWindow.reload()
@@ -34,10 +37,12 @@ function createWindow() {
 
   if (appUrl) {
     mainWindow.loadURL(appUrl);
+    mainWindow.show();
   } else {
 
     prompt({
       title: 'Coder Server URL',
+      alwaysOnTop: true,
       label: 'URL:',
       value: 'https://code.tgxn.tech/',
       inputAttrs: {
@@ -51,10 +56,9 @@ function createWindow() {
         console.log('result', result);
 
         store.set('appUrl', result);
-        // appUrl = result;
 
         mainWindow.loadURL(appUrl);
-        mainWindow.reload()
+        mainWindow.show();
 
       }
     }).catch(console.error);
@@ -73,45 +77,54 @@ function createWindow() {
     mainWindow = null;
   });
 
-
+  // http basic auth
   app.on('login', function (event, webContents, request, authInfo, callback) {
     event.preventDefault();
 
-    let prompts = [
-      prompt({
-        title: 'Password',
-        label: 'Password:',
-        value: '',
-        inputAttrs: {
-          type: 'password'
-        },
-        type: 'input'
-      })
-    ];
+    let usernamePromise, passwordPromise;
 
-    let user = store.get('appUser1');
-
-    if (!user) {
-      prompts.push(prompt({
+    // check for saved user
+    let storedUsername = store.get('appUser');
+    if (storedUsername) {
+      usernamePromise = Promise.resolve(storedUsername);
+    } else {
+      usernamePromise = prompt({
         title: 'Username',
         label: 'Username:',
+        alwaysOnTop: true,
         value: '',
         inputAttrs: {
-          type: 'text'
+          type: 'text',
+          required: true
         },
         type: 'input'
-      }));
-    } else {
-      prompts.push(Promise.resolve(user));
+      });
     }
+
+    passwordPromise = prompt({
+      title: 'Password',
+      label: 'Password:',
+      alwaysOnTop: true,
+      value: '',
+      inputAttrs: {
+        type: 'password',
+        required: true
+      },
+      type: 'input'
+    });
+
+    let prompts = [
+      usernamePromise,
+      passwordPromise
+    ];
 
     Promise.all(prompts).then(results => {
 
-      store.set('appUser1', results[1]);
+      console.log('got app User', results[0]);
 
-      // console.log(results[1], results[0]);
+      store.set('appUser', results[0]);
 
-      callback(results[1], results[0]);
+      callback(results[0], results[1]);
 
     }).catch(console.error);
 
