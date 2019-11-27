@@ -2,7 +2,9 @@
 const { app, Menu, BrowserWindow, BrowserView, globalShortcut } = require("electron");
 
 const Store = require('electron-store');
-const store = new Store('123');
+const store = new Store();
+
+store.clear();
 
 const prompt = require('electron-prompt');
 
