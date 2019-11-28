@@ -1,7 +1,6 @@
 {
   "name": "code-server-client",
   "version": "1.4.0",
-  "author": "tgxn",
   "description": "A Code-Server client in Electron",
   "main": "main.js",
   "license": "MIT",
@@ -26,8 +25,9 @@
     "win": {
       "icon": "image/icon.png"
     },
-    "extraFiles": [
-      "image/icon.png"
+    "files": [
+      "./src/*",
+      "./image/*"
     ]
   }
 }

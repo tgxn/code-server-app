@@ -7,6 +7,36 @@ const store = new Store();
 
 let mainWindow, tray;
 
+
+let setupHost = () => {
+
+    prompt({
+        title: 'Coder Server URL',
+        alwaysOnTop: true,
+        label: 'URL:',
+        value: '',
+        inputAttrs: {
+            type: 'url'
+        },
+        type: 'input'
+    }).then(result => {
+        if (result === null) {
+            console.log('user cancelled');
+        } else {
+
+            store.set('appUrl', result);
+
+            mainWindow.loadURL(result);
+            mainWindow.show();
+            mainWindow.reload();
+
+        }
+    }).catch(console.error);
+
+
+};
+
+
 function createWindow() {
 
     mainWindow = new BrowserWindow({
@@ -32,7 +62,7 @@ function createWindow() {
                 {
                     label: "Set Server",
                     click: function () {
-
+                        setupHost();
                     }
                 },
                 {
@@ -72,29 +102,8 @@ function createWindow() {
         mainWindow.loadURL(appUrl);
         mainWindow.show();
     } else {
-
-        prompt({
-            title: 'Coder Server URL',
-            alwaysOnTop: true,
-            label: 'URL:',
-            value: '',
-            inputAttrs: {
-                type: 'url'
-            },
-            type: 'input'
-        }).then(result => {
-            if (result === null) {
-                console.log('user cancelled');
-            } else {
-                store.set('appUrl', result);
-
-                mainWindow.loadURL(result);
-                mainWindow.show();
-            }
-        }).catch(console.error);
-
+        setupHost();
     }
-
 
     mainWindow.on("closed", function () {
         mainWindow = null;
