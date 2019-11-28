@@ -1,4 +1,10 @@
-const { app, Menu, BrowserWindow, Tray } = require("electron");
+const {
+    app,
+    ipcMain,
+    Menu,
+    BrowserWindow,
+    Tray
+} = require("electron");
 
 const Store = require('electron-store');
 const prompt = require('electron-prompt');
@@ -7,6 +13,44 @@ const store = new Store();
 
 let mainWindow, tray;
 
+let setupBasicAuth = () => {
+    return new Promise((resolve, reject) => {
+
+        let loginWindow = new BrowserWindow({
+            width: 400,
+            height: 250,
+            backgroundColor: "#252526",
+            autoHideMenuBar: true,
+            frame: false,
+            resizable: false,
+            movable: false,
+            modal: true,
+            center: true,
+            parent: mainWindow,
+
+            webPreferences: {
+                nodeIntegration: true,
+            },
+            show: false,
+        });
+
+        loginWindow.loadURL(`file://${__dirname}/window/login/login.html`);
+
+        loginWindow.once('ready-to-show', () => {
+            loginWindow.show()
+        });
+
+        ipcMain.on('login_form', (event, user, pass) => {
+
+            resolve({
+                username: user,
+                password: pass
+            });
+
+        });
+
+    });
+};
 
 let setupHost = () => {
 
@@ -33,9 +77,7 @@ let setupHost = () => {
         }
     }).catch(console.error);
 
-
 };
-
 
 function createWindow() {
 
@@ -54,26 +96,15 @@ function createWindow() {
     });
 
     tray = new Tray('image/icon.png')
-    const contextMenu = Menu.buildFromTemplate([
-        {
-            label: "Config",
-            submenu: [
-
-                {
-                    label: "Set Server",
-                    click: function () {
-                        setupHost();
-                    }
-                },
-                {
-                    label: "Set User",
-                    click: function () {
-
-                    }
-                }
-            ]
+    const contextMenu = Menu.buildFromTemplate([{
+            label: "Change Server",
+            click: function () {
+                setupHost();
+            }
         },
-        { type: "separator" },
+        {
+            type: "separator"
+        },
         {
             label: 'Reload',
             click: function () {
@@ -98,7 +129,6 @@ function createWindow() {
     let appUrl = store.get('appUrl');
 
     if (appUrl) {
-        console.log('got appUrl', appUrl);
         mainWindow.loadURL(appUrl);
         mainWindow.show();
     } else {
@@ -113,52 +143,9 @@ function createWindow() {
     app.on('login', function (event, webContents, request, authInfo, callback) {
         event.preventDefault();
 
-        let usernamePromise, passwordPromise;
-
-        // check for saved user
-        let storedUsername = store.get('appUser');
-        if (storedUsername) {
-            usernamePromise = Promise.resolve(storedUsername);
-        } else {
-            usernamePromise = prompt({
-                title: 'Username',
-                label: 'Enter Username',
-                alwaysOnTop: true,
-                value: '',
-                inputAttrs: {
-                    type: 'text',
-                    required: true
-                },
-                type: 'input'
-            });
-        }
-
-        passwordPromise = prompt({
-            title: 'Password',
-            label: 'Enter Password',
-            alwaysOnTop: true,
-            value: '',
-            inputAttrs: {
-                type: 'password',
-                required: true
-            },
-            type: 'input'
+        setupBasicAuth().then(result => {
+            callback(result.username, result.password);
         });
-
-        let prompts = [
-            usernamePromise,
-            passwordPromise
-        ];
-
-        Promise.all(prompts).then(results => {
-
-            console.log('got app User', results[0]);
-
-            store.set('appUser', results[0]);
-
-            callback(results[0], results[1]);
-
-        }).catch(console.error);
 
     });
 
