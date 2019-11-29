@@ -13,6 +13,8 @@ const store = new Store();
 
 let mainWindow, tray;
 
+let serverUrl = "";
+
 let setupBasicAuth = () => {
     return new Promise((resolve, reject) => {
 
@@ -20,11 +22,19 @@ let setupBasicAuth = () => {
             width: 400,
             height: 250,
             backgroundColor: "#252526",
-            autoHideMenuBar: true,
-            frame: false,
+
             resizable: false,
             movable: false,
+            minimizable: false,
+            maximizable: false,
+            closable: false,
+            alwaysOnTop: true,
+            fullscreenable: false,
+
+            autoHideMenuBar: true,
+            icon: 'image/icons8-cloud-24.png',
             modal: true,
+
             center: true,
             parent: mainWindow,
 
@@ -55,20 +65,24 @@ let setupBasicAuth = () => {
 let setupHost = () => {
 
     prompt({
-        title: 'Coder Server URL',
+        title: 'Code-Server URL',
         alwaysOnTop: true,
-        label: 'URL:',
-        value: '',
+        label: 'Enter URL:',
+        value: serverUrl,
         inputAttrs: {
+            placeholder: 'https://server.example.org',
             type: 'url'
         },
         type: 'input'
     }).then(result => {
         if (result === null) {
             console.log('user cancelled');
+
+            // @TODO implement handler when we need the url.
+
         } else {
 
-            store.set('appUrl', result);
+            store.set('serverUrl', result);
 
             mainWindow.loadURL(result);
             mainWindow.show();
@@ -85,8 +99,8 @@ function createWindow() {
         width: 1280,
         height: 720,
         show: false,
-        icon: 'image/icon.png',
-        title: 'Code-Server Client',
+        icon: 'image/icons8-cloud-24.png',
+        title: 'Code-Server Client v' + app.getVersion(),
         backgroundColor: "#252526",
         autoHideMenuBar: true,
         darkTheme: true,
@@ -95,8 +109,11 @@ function createWindow() {
         },
     });
 
-    tray = new Tray('image/icon.png')
+    tray = new Tray('image/icons8-cloud-24.png')
     const contextMenu = Menu.buildFromTemplate([{
+            label: serverUrl != "" ? serverUrl : "no server configured",
+            enabled: false
+        }, {
             label: "Change Server",
             click: function () {
                 setupHost();
@@ -122,14 +139,25 @@ function createWindow() {
             }
         }
     ])
-    tray.setToolTip('Code-Server Client');
+    tray.setToolTip('Code-Server Client v' + app.getVersion());
     tray.setContextMenu(contextMenu);
 
-    // attempt to load stored url
-    let appUrl = store.get('appUrl');
+    tray.setIgnoreDoubleClickEvents(true);
 
-    if (appUrl) {
-        mainWindow.loadURL(appUrl);
+    tray.on('click', function (e) {
+        if (mainWindow.isFocused()) {
+            mainWindow.hide()
+        } else {
+            mainWindow.show()
+            mainWindow.showInactive()
+        }
+    });
+
+    // attempt to load stored url
+    serverUrl = store.get('serverUrl');
+
+    if (serverUrl) {
+        mainWindow.loadURL(serverUrl);
         mainWindow.show();
     } else {
         setupHost();
