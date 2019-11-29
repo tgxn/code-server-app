@@ -24,7 +24,7 @@
     "appId": "tech.tgxn.code",
     "artifactName": "Code-Server-Client-${version}-Setup.${ext}",
     "win": {
-      "icon": "image/icons8-cloud-48.png"
+      "icon": "image/clouds.png"
     },
     "extraFiles": [
       "./image/*"

@@ -15,109 +15,17 @@ let mainWindow, tray;
 
 let serverUrl = "";
 
-let setupBasicAuth = () => {
-    return new Promise((resolve, reject) => {
+let setupTrayIcon = () => {
 
-        let loginWindow = new BrowserWindow({
-            width: 400,
-            height: 250,
-            backgroundColor: "#252526",
-
-            resizable: false,
-            movable: false,
-            minimizable: false,
-            maximizable: false,
-            closable: false,
-            alwaysOnTop: true,
-            fullscreenable: false,
-
-            autoHideMenuBar: true,
-            icon: 'image/icons8-cloud-24.png',
-            modal: true,
-
-            center: true,
-            parent: mainWindow,
-
-            webPreferences: {
-                nodeIntegration: true,
-            },
-            show: false,
-        });
-
-        loginWindow.loadURL(`file://${__dirname}/window/login/login.html`);
-
-        loginWindow.once('ready-to-show', () => {
-            loginWindow.show()
-        });
-
-        ipcMain.on('login_form', (event, user, pass) => {
-
-            resolve({
-                username: user,
-                password: pass
-            });
-
-        });
-
-    });
-};
-
-let setupHost = () => {
-
-    prompt({
-        title: 'Code-Server URL',
-        alwaysOnTop: true,
-        label: 'Enter URL:',
-        value: serverUrl,
-        inputAttrs: {
-            placeholder: 'https://server.example.org',
-            type: 'url'
-        },
-        type: 'input'
-    }).then(result => {
-        if (result === null) {
-            console.log('user cancelled');
-
-            // @TODO implement handler when we need the url.
-
-        } else {
-
-            store.set('serverUrl', result);
-
-            mainWindow.loadURL(result);
-            mainWindow.show();
-            mainWindow.reload();
-
-        }
-    }).catch(console.error);
-
-};
-
-function createWindow() {
-
-    mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 720,
-        show: false,
-        icon: 'image/icons8-cloud-24.png',
-        title: 'Code-Server Client v' + app.getVersion(),
-        backgroundColor: "#252526",
-        autoHideMenuBar: true,
-        darkTheme: true,
-        webPreferences: {
-            nodeIntegration: false,
-        },
-    });
-
-    tray = new Tray('image/icons8-cloud-24.png')
+    tray = new Tray('image/clouds.png')
     const contextMenu = Menu.buildFromTemplate([{
-            label: serverUrl != "" ? serverUrl : "no server configured",
-            enabled: false
-        }, {
             label: "Change Server",
             click: function () {
                 setupHost();
             }
+        }, {
+            label: serverUrl != "" ? serverUrl : "no server configured",
+            enabled: false
         },
         {
             type: "separator"
@@ -153,6 +61,106 @@ function createWindow() {
         }
     });
 
+};
+
+let setupHost = () => {
+
+    prompt({
+        title: 'Code-Server URL',
+        alwaysOnTop: true,
+        label: 'Enter URL:',
+        value: serverUrl,
+        inputAttrs: {
+            placeholder: 'https://server.example.org',
+            type: 'url'
+        },
+        type: 'input'
+    }).then(result => {
+        if (result === null) {
+            console.log('user cancelled');
+
+            // @TODO implement handler when we need the url.
+
+        } else {
+
+            serverUrl = result
+
+            store.set('serverUrl', result);
+
+            setupTrayIcon();
+
+            mainWindow.loadURL(result);
+            mainWindow.show();
+            mainWindow.reload();
+
+        }
+    }).catch(console.error);
+
+};
+
+let setupBasicAuth = () => {
+    return new Promise((resolve, reject) => {
+
+        let loginWindow = new BrowserWindow({
+            width: 400,
+            height: 250,
+            backgroundColor: "#252526",
+
+            resizable: false,
+            movable: false,
+            minimizable: false,
+            maximizable: false,
+            closable: false,
+            alwaysOnTop: true,
+            fullscreenable: false,
+
+            autoHideMenuBar: true,
+            icon: 'image/clouds.png',
+            modal: true,
+
+            center: true,
+            parent: mainWindow,
+
+            webPreferences: {
+                nodeIntegration: true,
+            },
+            show: false,
+        });
+
+        loginWindow.loadURL(`file://${__dirname}/window/login/login.html`);
+
+        loginWindow.once('ready-to-show', () => {
+            loginWindow.show()
+        });
+
+        ipcMain.on('login_form', (event, user, pass) => {
+
+            resolve({
+                username: user,
+                password: pass
+            });
+
+        });
+
+    });
+};
+
+function createWindow() {
+
+    mainWindow = new BrowserWindow({
+        width: 1280,
+        height: 720,
+        show: false,
+        icon: 'image/clouds.png',
+        title: 'Code-Server Client v' + app.getVersion(),
+        backgroundColor: "#252526",
+        autoHideMenuBar: true,
+        darkTheme: true,
+        webPreferences: {
+            nodeIntegration: false,
+        },
+    });
+
     // attempt to load stored url
     serverUrl = store.get('serverUrl');
 
@@ -162,6 +170,8 @@ function createWindow() {
     } else {
         setupHost();
     }
+
+    setupTrayIcon();
 
     mainWindow.on("closed", function () {
         mainWindow = null;
