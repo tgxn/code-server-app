@@ -103,7 +103,7 @@ let setupBasicAuth = () => {
 
         let loginWindow = new BrowserWindow({
             width: 400,
-            height: 250,
+            height: 240,
             backgroundColor: "#252526",
 
             resizable: false,
@@ -114,7 +114,6 @@ let setupBasicAuth = () => {
             alwaysOnTop: true,
             fullscreenable: false,
 
-            autoHideMenuBar: true,
             icon: 'image/clouds.png',
             modal: true,
 
@@ -126,6 +125,8 @@ let setupBasicAuth = () => {
             },
             show: false,
         });
+
+        loginWindow.setMenu(null);
 
         loginWindow.loadURL(`file://${__dirname}/window/login/login.html`);
 
@@ -154,12 +155,13 @@ function createWindow() {
         icon: 'image/clouds.png',
         title: 'Code-Server Client v' + app.getVersion(),
         backgroundColor: "#252526",
-        autoHideMenuBar: true,
         darkTheme: true,
         webPreferences: {
             nodeIntegration: false,
         },
     });
+
+    mainWindow.setMenu(null);
 
     // attempt to load stored url
     serverUrl = store.get('serverUrl');

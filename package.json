@@ -1,6 +1,6 @@
 {
   "name": "code-server-client",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "A Code-Server client in Electron",
   "main": "main.js",
   "license": "MIT",
@@ -21,7 +21,7 @@
   },
   "build": {
     "productName": "Code-Server-Client",
-    "appId": "tech.tgxn.code",
+    "appId": "code.server.client",
     "artifactName": "Code-Server-Client-${version}-Setup.${ext}",
     "win": {
       "icon": "image/clouds.png"
